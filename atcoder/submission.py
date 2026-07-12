@@ -1,18 +1,17 @@
 import datetime
-import os.path
 import re
 import subprocess
 import sys
 import time
 
-import requests
-from bs4 import BeautifulSoup
 from aggregate import current_credentials, current_preferences
 from atcoder.constants import *
-from const import ContestType, print_err, LIB_PATH, make_ascii_escaped, AsciiColors, replace_current_line, \
-    clear_current_line, TestcaseResult, make_progress, testcase_result_to_string, fill_space
+from bs4 import BeautifulSoup
+from const import ContestType, print_err, make_ascii_escaped, AsciiColors, replace_current_line, \
+    TestcaseResult, make_progress, testcase_result_to_string, fill_space
 from requests_wrapper import get_requests, RequestsWrapper
 from struction.submission import SubmissionHandler, Submission, SubmissionOption, SubmissionResult
+
 
 class AtCoderSubmissionResult(SubmissionResult):
     progress_current: int
@@ -29,22 +28,25 @@ class AtCoderSubmissionResult(SubmissionResult):
 
     def to_string(self):
         if self.progress_max > -1:
-            suffix = f"{self.progress_current}/{self.progress_max} " + make_progress(self.progress_current, self.progress_max, 10) + " "
+            suffix = f"{self.progress_current}/{self.progress_max} " + make_progress(self.progress_current,
+                                                                                     self.progress_max, 10) + " "
             res = fill_space(testcase_result_to_string(self.result), 21)
         else:
             suffix = ""
             res = testcase_result_to_string(self.result)
 
-
         return res + suffix
+
 
 class AtCoderSubmissionOption(SubmissionOption):
     pass
 
+
 class AtCoderSubmission(Submission):
     result: AtCoderSubmissionResult
 
-    def __init__(self, created: int, problem: str, time_consumption: float, result: AtCoderSubmissionResult, memory_consumption: float):
+    def __init__(self, created: int, problem: str, time_consumption: float, result: AtCoderSubmissionResult,
+                 memory_consumption: float):
         self.created = created
         self.problem = problem
         self.time_consumption = time_consumption
@@ -62,6 +64,7 @@ class AtCoderSubmission(Submission):
             return str(round(self.memory_consumption)) + " KiB"
         else:
             return ""
+
 
 class AtCoderSubmissionHandler(SubmissionHandler):
     prob: str
@@ -86,7 +89,8 @@ class AtCoderSubmissionHandler(SubmissionHandler):
         post_res.raise_for_status()
 
         if post_res.status_code != 302:
-            replace_current_line(make_ascii_escaped("Failed to submit, make sure you're participating in a contest", AsciiColors.BRIGHT_RED))
+            replace_current_line(make_ascii_escaped("Failed to submit, make sure you're participating in a contest",
+                                                    AsciiColors.BRIGHT_RED))
         else:
             replace_current_line(make_ascii_escaped("Successfully submitted", AsciiColors.BRIGHT_GREEN))
         sys.stdout.write("\n")
@@ -123,7 +127,7 @@ class AtCoderSubmissionHandler(SubmissionHandler):
                 progress_current = int(parsed_progress_result.group(1))
                 progress_max = int(parsed_progress_result.group(2))
 
-            if result != TestcaseResult.COMPILE_ERROR:
+            if result != TestcaseResult.COMPILE_ERROR and result != TestcaseResult.WAITING_JUDGE:
                 parsed_time_consumption = re.search("([0-9]+) ms", datum[7].text)
                 if parsed_time_consumption is None:
                     print_err("Failed to detect time consumption from: " + datum[7].text)
@@ -154,6 +158,7 @@ class AtCoderSubmissionHandler(SubmissionHandler):
             ))
 
         return submissions
+
 
 def pretty_print_submissions(l: list[AtCoderSubmission]):
     max_sizes = []

@@ -10,9 +10,9 @@ import compete_watch
 import credentials_wizard
 import preferences_wizard
 from aggregate import current_preferences, current_credentials
-from atcoder.submission import AtCoderSubmissionHandler, AtCoderSubmissionOption, pretty_print_submissions
+from atcoder.submission import AtCoderSubmissionHandler, AtCoderSubmissionOption
 from const import TestcaseResult, ROOT_PATH, print_err, make_ascii_escaped, AsciiColors, TESTCASES_CACHE_PATH, Problem, \
-    replace_current_line, make_ascii_move, clear_after_lines
+    replace_current_line
 from struction.preferences import PreferenceKeys
 
 
@@ -79,7 +79,7 @@ def run():
             break
 
     if not ac:
-        pass
+        return
     sys.stdout.write("\n")
 
     for i in range(2, 0, -1):
@@ -103,7 +103,6 @@ def run():
     handler = AtCoderSubmissionHandler(problem.problem_id)
     if handler.submit(content, AtCoderSubmissionOption()):
         compete_watch.run(True)
-
 
 
 if __name__ == '__main__':
