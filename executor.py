@@ -117,7 +117,6 @@ def execute(target: str, testcase: Testcase) -> RuntimeTestcase:
 def find_executable_by_cmake(candidates: list):
     path = ROOT_PATH
     if not os.path.exists(os.path.join(path, "CMakeLists.txt")):
-        print_err("CMakeLists.txt does not exists")
         return None
 
     with open(os.path.join(path, "CMakeLists.txt"), 'r', encoding='utf-8') as f:
