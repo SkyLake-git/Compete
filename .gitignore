@@ -1,0 +1,7 @@
+venv/
+resources/
+.idea/
+__pycache__/
+*/__pycache__/
+chrome_data/
+turnstile
