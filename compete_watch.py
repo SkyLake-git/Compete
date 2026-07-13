@@ -28,9 +28,9 @@ def run(auto_exit: bool):
         if auto_exit:
             break
         if should_exit:
-            time.sleep(6)
+            time.sleep(3)
         else:
-            time.sleep(4)
+            time.sleep(2)
         repeated = True
         sys.stdout.write(make_ascii_move(len(submissions) + 1))
 
