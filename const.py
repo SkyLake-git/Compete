@@ -131,8 +131,8 @@ class Testcase:
     def serialize(self):
         return {
             "label": self.label,
-            "inputs": self.inputs,
-            "expected": self.expected,
+            "inputs": self.inputs.replace("\r", ""),
+            "expected": self.expected.replace("\r", ""),
             "time_limit": self.time_limit
         }
 
