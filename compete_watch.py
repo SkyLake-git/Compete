@@ -15,7 +15,7 @@ def run(auto_exit: bool):
     handler = AtCoderSubmissionHandler(problem.problem_id)
     repeated = False
     while True:
-        submissions = handler.fetch_submissions()
+        submissions = handler.fetch_submissions(10)
         should_exit = True
         for s in submissions:
             if s.result == TestcaseResult.WAITING_JUDGE:

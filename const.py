@@ -7,7 +7,7 @@ from math import remainder
 BASE_URL = "https://atcoder.jp/"
 REQUEST_HEADERS = {
     'Accept-Language': 'ja',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36'
+    'User-Agent': 'zMozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36'
 }
 
 ROOT_PATH = os.path.join(os.path.dirname(__file__), "..")
@@ -18,8 +18,10 @@ TESTCASES_CACHE_PATH = os.path.join(RESOURCES_PATH, "testcases.json")
 PREFERENCES_PATH = os.path.join(RESOURCES_PATH, "preferences.json")
 CREDENTIALS_PATH = os.path.join(RESOURCES_PATH, "credentials.json")
 
+
 class ContestType:
     ATCODER = 0
+
 
 class TestcaseResult:
     ACCEPTED = 0
@@ -80,6 +82,7 @@ def testcase_result_color(result: int) -> int:
 def print_err(message: str):
     print(make_ascii_escaped("┃ " + message, AsciiColors.BRIGHT_RED))
 
+
 def waiting_judge_to_string() -> str:
     return make_ascii_escaped(" WJ ", AsciiColors.BRIGHT_BLACK, AsciiColors.DEFAULT, code=7)
 
@@ -137,6 +140,7 @@ class Testcase:
     def deserialize(d):
         return Testcase(d["label"], d["inputs"], d["expected"], d["time_limit"])
 
+
 class RuntimeTestcase(Testcase):
     result: int
     outputs: str
@@ -146,7 +150,8 @@ class RuntimeTestcase(Testcase):
     additional_data: list
     judges: list[tuple[str, str, bool]]
 
-    def __init__(self, label, inputs, expected, time_limit, result, outputs, err_outputs, duration, cpu_duration, judges):
+    def __init__(self, label, inputs, expected, time_limit, result, outputs, err_outputs, duration, cpu_duration,
+                 judges):
         super().__init__(label, inputs, expected, time_limit)
         self.result = result
         self.outputs = outputs
@@ -179,8 +184,9 @@ class RuntimeTestcase(Testcase):
         c = [
             make_ascii_escaped(f"- {self.label} ", AsciiColors.DEFAULT,
                                AsciiColors.BRIGHT_BLACK) + " " + testcase_result_to_string(
-                self.result) + make_ascii_escaped(f" real: {round(self.duration * 1000, 1)}ms, cpu: {round(self.cpu_duration * 1000, 1)}ms ",
-                                                  AsciiColors.BRIGHT_CYAN) + make_ascii_escaped(
+                self.result) + make_ascii_escaped(
+                f" real: {round(self.duration * 1000, 1)}ms, cpu: {round(self.cpu_duration * 1000, 1)}ms ",
+                AsciiColors.BRIGHT_CYAN) + make_ascii_escaped(
                 f"/{round(self.time_limit * 1000)}ms ", AsciiColors.BRIGHT_BLACK) + additional,
             make_ascii_escaped("IN:", AsciiColors.BRIGHT_BLUE),
             self.inputs.strip(),
@@ -200,11 +206,12 @@ class RuntimeTestcase(Testcase):
 
         print("\n".join(c))
 
+
 class Problem:
     problem_id: str
     testcases: list[Testcase]
 
-    def __init__(self, problem_id: str, testcases: list [Testcase]):
+    def __init__(self, problem_id: str, testcases: list[Testcase]):
         self.problem_id = problem_id
         self.testcases = testcases
 
@@ -221,6 +228,7 @@ class Problem:
             list(map(Testcase.deserialize, data["testcases"]))
         )
 
+
 def url_join(a, *b):
     return a + "/".join(b)
 
@@ -233,14 +241,18 @@ def make_ascii_escaped(v: str, text_color: int, bg_color: int = AsciiColors.DEFA
         b += make_ascii_reset()
     return b
 
+
 def make_ascii_progress(status: int, percentage: int):
     return f"\x1b]9;4;{status};{percentage}\x07"
+
 
 def make_ascii_progress_reset():
     return f"\x1b]9;4;0;0\x07"
 
+
 def make_ascii_bell():
     return f"\x07"
+
 
 def make_ascii_move(row: int):
     if row > 0:
@@ -249,11 +261,14 @@ def make_ascii_move(row: int):
         suf = "E"
     return f"\x1b[{abs(row)}{suf}"
 
+
 def block_wrap():
     sys.stdout.write(f"\x1b[?7h")
 
+
 def allow_wrap():
     sys.stdout.write(f"\x1b[?7l")
+
 
 def make_ascii_reset():
     return "\x1b[0m"
@@ -265,19 +280,22 @@ def dict_getdefault(t: dict, k, default=None):
     else:
         return default
 
+
 def clear_current_line():
     sys.stdout.write(f"\r\x1b[2K")
+
 
 def clear_after_lines():
     sys.stdout.write(f"\r\x1b[0J")
 
+
 def replace_current_line(message: str):
     sys.stdout.write(f"\r\x1b[2K{message}\x1b[0K")
+
 
 def make_progress(pcur, pmax, col):
     count = int(math.floor((pcur / pmax) / (1 / col)))
     rem = (pcur / pmax) - count * (1 / col)
-    print(count, rem)
 
     codes = ["▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"]
     base = "█" * count
@@ -285,6 +303,7 @@ def make_progress(pcur, pmax, col):
     base += " " * max(0, col - count - 1)
 
     return base
+
 
 def fill_space(s, smax):
     s += max(0, smax - len(s)) * " "

@@ -100,7 +100,7 @@ class AtCoderSubmissionHandler(SubmissionHandler):
     def can_fetch_submissions(self) -> bool:
         return True
 
-    def fetch_submissions(self) -> list[AtCoderSubmission]:
+    def fetch_submissions(self, limit=None) -> list[AtCoderSubmission]:
         res = self.wrapper.get(get_my_submissions_url(self.prob))
         res.raise_for_status()
         soup = BeautifulSoup(res.text, "html.parser")
@@ -109,7 +109,7 @@ class AtCoderSubmissionHandler(SubmissionHandler):
         table = soup.find("table")
         if table is None:
             return []
-        for d in table.find("tbody").find_all("tr"):
+        for d in table.find("tbody").find_all("tr", limit=limit):
             datum = d.find_all("td", limit=9)
 
             parsed_progress_result = re.search("([0-9]+)/([0-9]+)", datum[6].text)
@@ -127,7 +127,7 @@ class AtCoderSubmissionHandler(SubmissionHandler):
                 progress_current = int(parsed_progress_result.group(1))
                 progress_max = int(parsed_progress_result.group(2))
 
-            if result != TestcaseResult.COMPILE_ERROR and result != TestcaseResult.WAITING_JUDGE:
+            if result != TestcaseResult.COMPILE_ERROR and result != TestcaseResult.WAITING_JUDGE and len(datum) == 9:
                 parsed_time_consumption = re.search("([0-9]+) ms", datum[7].text)
                 if parsed_time_consumption is None:
                     print_err("Failed to detect time consumption from: " + datum[7].text)
