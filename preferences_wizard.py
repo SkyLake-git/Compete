@@ -43,6 +43,8 @@ def wizard(keys: list[str], force: bool = False) -> bool:
     print(make_ascii_escaped("Successfully changed preferences", AsciiColors.BRIGHT_GREEN))
     save_current_preferences()
 
+def run():
+    wizard(PREFERENCE_KEY_LIST)
 
 if __name__ == '__main__':
-    wizard(PREFERENCE_KEY_LIST)
+    run()

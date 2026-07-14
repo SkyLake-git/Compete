@@ -24,6 +24,12 @@ AtCoder 用のテストケースユーティリティー<br>
 (現在 AtCoder のみ対応)<br><br>
 サイト別の認証情報の取得方法については [こちら](./README.md#how-to-get-credential-information)
 
+### `preferences`
+エイリアス: `pref`
+
+設定を変更します<br>
+設定キーの詳細については [こちら](./README.md#preferences-1)
+
 ### `start [problem_id]`
 
 問題ページをスクレイピングし、テストケースを取得します<br>

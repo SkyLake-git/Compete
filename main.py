@@ -5,6 +5,8 @@ import compete_submit
 import compete_test
 import compete_watch
 import credentials_wizard
+import preferences_wizard
+
 from const import *
 if __name__ == '__main__':
     if len(sys.argv) < 2:
@@ -24,5 +26,7 @@ if __name__ == '__main__':
         compete_submit.run()
     elif cmd == "watch":
         compete_watch.run(False)
+    elif cmd == "preferences" or cmd == "pref":
+        preferences_wizard.run()
     else:
         print_err("Unknown command: " + cmd)
