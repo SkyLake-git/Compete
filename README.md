@@ -56,6 +56,14 @@ AtCoder Beginner Contest 400 の A問題 の場合、 `abc400_a` と入力すれ
 > 自動提出は、進行中のコンテストのみ可能です。<br>
 > その他のコンテストへの提出は Cloudflare Turnstile により不可能です。
 
+> [!TIP]
+> ソースコードファイルに以下のようにコメントを追加することで、提出するコードの範囲を指定することができます。
+> ```text
+> // compete BOF          (提出ソースコードの始まりを指定)
+> write your code here
+> // compete EOF          (提出ソースコードの終わりを指定)
+> ```
+
 コマンド実行時に必要なセットアップが出来ていない場合セットアップウィザードに移行します。
 
 ## How to get credential information

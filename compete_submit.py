@@ -91,17 +91,22 @@ def run():
         return
 
     with open(source, 'r', encoding='utf-8') as f:
-        content = f.read()
+        content = f.read().replace("\r", "")
 
     with open(TESTCASES_CACHE_PATH, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
+    matched = re.search(r"// compete BOF([\s\S]*)// compete EOF", content)
+    if matched is None:
+        formatted_content = content
+    else:
+        formatted_content = matched.group(1)
     problem = Problem.deserialize(data)
 
     replace_current_line(make_ascii_escaped(f"Submitting {problem.problem_id}...", AsciiColors.BRIGHT_GREEN))
     sys.stdout.write("\r\n")
     handler = AtCoderSubmissionHandler(problem.problem_id)
-    if handler.submit(content, AtCoderSubmissionOption()):
+    if handler.submit(formatted_content, AtCoderSubmissionOption()):
         compete_watch.run(True)
 
 
