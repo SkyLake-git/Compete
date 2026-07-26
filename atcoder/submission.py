@@ -85,7 +85,7 @@ class AtCoderSubmissionHandler(SubmissionHandler):
             "data.TaskScreenName": self.prob,
             "data.LanguageId": to_language_id(current_preferences.language_id),
             "sourceCode": content,
-        }, allow_redirects=True)
+        }, allow_redirects=False)
         post_res.raise_for_status()
 
         if post_res.status_code != 302:

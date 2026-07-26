@@ -8,6 +8,7 @@ class PreferenceKeys:
     SOURCE_PATH = "source_path"
     LANGUAGE_ID = "language_id"
     REQUEST_DBG_REMAIN_TAIL = "request_dbg_remain_tail"
+    SUBMIT_DELAY = "submit_delay"
 
     @staticmethod
     def description(k: str):
@@ -42,18 +43,21 @@ class Preferences:
     source_path: typing.Union[None, str]
     language_id: typing.Union[None, int]
     request_dbg_remain_tail: bool
+    submit_delay: int
 
     def __init__(
             self,
             executable_path: typing.Union[None, str] = None,
             source_path: typing.Union[None, str] = None,
             language_id: typing.Union[None, int] = None,
-            request_dbg_remain_tail: bool = True
+            request_dbg_remain_tail: bool = True,
+            submit_delay: int = 2
     ):
         self.executable_path = executable_path
         self.source_path = source_path
         self.language_id = language_id
         self.request_dbg_remain_tail = request_dbg_remain_tail
+        self.submit_delay = submit_delay
 
         if executable_path is not None:
             if not os.path.exists(executable_path):
@@ -70,7 +74,8 @@ class Preferences:
             PreferenceKeys.EXECUTABLE_PATH: self.executable_path,
             PreferenceKeys.SOURCE_PATH: self.source_path,
             PreferenceKeys.LANGUAGE_ID: self.language_id,
-            PreferenceKeys.REQUEST_DBG_REMAIN_TAIL: self.request_dbg_remain_tail
+            PreferenceKeys.REQUEST_DBG_REMAIN_TAIL: self.request_dbg_remain_tail,
+            PreferenceKeys.SUBMIT_DELAY: self.submit_delay
         }
 
     def update(self, another):
@@ -78,6 +83,7 @@ class Preferences:
         self.source_path = another.source_path
         self.language_id = another.language_id
         self.request_dbg_remain_tail = another.request_dbg_remain_tail
+        self.submit_delay = another.submit_delay
 
     @staticmethod
     def deserialize(data: dict):
@@ -85,5 +91,6 @@ class Preferences:
             dict_getdefault(data, PreferenceKeys.EXECUTABLE_PATH),
             dict_getdefault(data, PreferenceKeys.SOURCE_PATH),
             dict_getdefault(data, PreferenceKeys.LANGUAGE_ID),
-            dict_getdefault(data, PreferenceKeys.REQUEST_DBG_REMAIN_TAIL, True)
+            dict_getdefault(data, PreferenceKeys.REQUEST_DBG_REMAIN_TAIL, True),
+            dict_getdefault(data, PreferenceKeys.SUBMIT_DELAY, 2)
         )

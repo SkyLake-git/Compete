@@ -82,10 +82,11 @@ def run():
         return
     sys.stdout.write("\n")
 
-    for i in range(2, 0, -1):
-        replace_current_line(make_ascii_escaped(f"Submitting in {i} seconds...", AsciiColors.BRIGHT_YELLOW))
-        time.sleep(1)
-    sys.stdout.write("\n")
+    if current_preferences.submit_delay > 0:
+        for i in range(current_preferences.submit_delay, 0, -1):
+            replace_current_line(make_ascii_escaped(f"Submitting in {i} seconds...", AsciiColors.BRIGHT_YELLOW))
+            time.sleep(1)
+        sys.stdout.write("\n")
     source = find_source()
     if source is None:
         return

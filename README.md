@@ -81,12 +81,13 @@ AtCoder Beginner Contest 400 の A問題 の場合、 `abc400_a` と入力すれ
 
 ## Preferences
 
-| キー                        | 型         | デフォルト値 | 説明                                                        |
-|---------------------------|-----------|--------|-----------------------------------------------------------|
-| `executable_path`         | `string`  | `null` | 実行可能ファイルを指定する                                             |
-| `source_path`             | `string`  | `null` | ソースコードファイルを指定する                                           |
-| `language_id`             | `int`     | `null` | 提出する際の言語を指定する                                             |
-| `request_dbg_remain_tail` | `boolean` | `true` | `true` の場合、通信の結果をコンソールに残します                               |
+| キー                        | 型         | デフォルト値 | 説明                                                 |
+|---------------------------|-----------|--------|----------------------------------------------------|
+| `executable_path`         | `string`  | `null` | 実行可能ファイルを指定する                                      |
+| `source_path`             | `string`  | `null` | ソースコードファイルを指定する                                    |
+| `language_id`             | `int`     | `null` | 提出する際の言語を指定する                                      |
+| `request_dbg_remain_tail` | `boolean` | `true` | `true` の場合、通信の結果をコンソールに残します                        |
+| `submit_delay`            | `int`     | `2`    | `submit` コマンドにて提出するまでの遅延を設定します<br>0 に設定すると即座に提出します |
 
 
 `executable_path`と　`source_path` を指定しない場合、このライブラリの親ディレクトリにある<br>

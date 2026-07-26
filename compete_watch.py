@@ -25,12 +25,10 @@ def run(auto_exit: bool):
             clear_after_lines()
         print()
         pretty_print_submissions(submissions)
-        if auto_exit:
+        if auto_exit and should_exit:
             break
-        if should_exit:
-            time.sleep(3)
-        else:
-            time.sleep(2)
+
+        time.sleep(4)
         repeated = True
         sys.stdout.write(make_ascii_move(len(submissions) + 1))
 
