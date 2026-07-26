@@ -15,6 +15,9 @@ AtCoder 用のテストケースユーティリティー<br>
 2. 実行 `python main.py <command>` または `python -m main <command>` ([コマンドについて](./README.md#commands))
 3. これだけ
 
+実行すると、 `main.py` が置かれているディレクトリに `resources/` ディレクトリが追加され、<br>
+設定関連のファイルが生成されます (`preferences.json` など)
+
 ## Commands
 
 ### `credentials`
