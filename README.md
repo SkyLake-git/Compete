@@ -11,9 +11,11 @@ AtCoder 用のテストケースユーティリティー<br>
 
 ## How to use
 
-1. 必要なライブラリをインストール: `pip install -r requirements.txt`
-2. 実行 `python main.py <command>` または `python -m main <command>` ([コマンドについて](./README.md#commands))
-3. これだけ
+
+1. 仮想環境を作成: `python -m venv .venv` (作成したくない場合、この工程をスキップしてください)
+2. 必要なライブラリをインストール: `pip install -r requirements.txt`
+3. 実行 `python main.py <command>` または `python -m main <command>` ([コマンドについて](./README.md#commands))
+4. これだけ
 
 実行すると、 `main.py` が置かれているディレクトリに `resources/` ディレクトリが追加され、<br>
 設定関連のファイルが生成されます (`preferences.json` など)
