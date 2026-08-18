@@ -14,7 +14,7 @@ AtCoder 用のテストケースユーティリティー<br>
 
 1. 仮想環境を作成: `python -m venv .venv` (作成したくない場合、この工程をスキップしてください)
 2. 必要なライブラリをインストール: `pip install -r requirements.txt`
-3. 実行 `python main.py <command>` または `python -m main <command>` ([コマンドについて](./README.md#commands))
+3. 実行 `.venv/Scripts/python main.py <command>` または `.venv/Scripts/python -m main <command>` ([コマンドについて](./README.md#commands))
 4. これだけ
 
 実行すると、 `main.py` が置かれているディレクトリに `resources/` ディレクトリが追加され、<br>
