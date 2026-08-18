@@ -14,21 +14,23 @@ def run(auto_exit: bool):
 
     handler = AtCoderSubmissionHandler(problem.problem_id)
     repeated = False
+    waiting_judge = False
     while True:
         submissions = handler.fetch_submissions(10)
         should_exit = True
         for s in submissions:
-            if s.result == TestcaseResult.WAITING_JUDGE:
+            if s.result.result == TestcaseResult.WAITING_JUDGE:
+                waiting_judge = True
                 should_exit = False
                 break
         if repeated:
             clear_after_lines()
         print()
         pretty_print_submissions(submissions)
-        if auto_exit and should_exit:
+        if auto_exit and should_exit and waiting_judge:
             break
 
-        time.sleep(4)
+        time.sleep(3)
         repeated = True
         sys.stdout.write(make_ascii_move(len(submissions) + 1))
 

@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 import typing
@@ -109,6 +110,10 @@ def run():
     handler = AtCoderSubmissionHandler(problem.problem_id)
     if handler.submit(formatted_content, AtCoderSubmissionOption()):
         compete_watch.run(True)
+    else:
+        if os.name == 'nt':
+            print(make_ascii_escaped("Pasted to clipboard instead of submitting.", AsciiColors.YELLOW))
+            subprocess.run(["clip"], input=formatted_content.encode("shift-jis"))
 
 
 if __name__ == '__main__':

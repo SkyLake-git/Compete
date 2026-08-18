@@ -115,7 +115,6 @@ class AtCoderSubmissionHandler(SubmissionHandler):
             parsed_progress_result = re.search("([0-9]+)/([0-9]+)", datum[6].text)
             parsed_result = re.search("([A-Z]+)", datum[6].text)
             if parsed_result is None:
-                print_err("Failed to detect result from: " + datum[6].text)
                 result = TestcaseResult.WAITING_JUDGE
             else:
                 result = TestcaseResult.from_string(parsed_result.group(1))
