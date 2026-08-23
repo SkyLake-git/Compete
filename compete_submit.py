@@ -1,3 +1,4 @@
+import glob
 import json
 import os
 import re
@@ -13,7 +14,7 @@ import preferences_wizard
 from aggregate import current_preferences, current_credentials
 from atcoder.submission import AtCoderSubmissionHandler, AtCoderSubmissionOption
 from const import TestcaseResult, ROOT_PATH, print_err, make_ascii_escaped, AsciiColors, TESTCASES_CACHE_PATH, Problem, \
-    replace_current_line
+    replace_current_line, CPP_FAKE_INCLUDE_PATH
 from struction.preferences import PreferenceKeys
 
 
@@ -60,6 +61,59 @@ def find_source() -> typing.Union[str, None]:
 
     return latest_target
 
+def fetch_gcc_includes() -> set:
+    proc = subprocess.run(["g++", "-print-file-name=include"], capture_output=True)
+
+    find_dir = proc.stdout.decode().strip()
+
+    print(find_dir)
+
+    includes = set()
+    if not os.path.exists(find_dir):
+        return includes
+    if not os.path.isdir(find_dir):
+        return includes
+    for i in glob.glob(os.path.join(find_dir, "**/*"), recursive=True):
+        if os.path.isdir(i):
+            continue
+        includes.add(os.path.relpath(i, find_dir))
+
+    return includes
+
+def expand_include_source(source_path: str, source: str):
+    if not os.path.exists(CPP_FAKE_INCLUDE_PATH):
+        for i in fetch_gcc_includes():
+            path = str(os.path.join(CPP_FAKE_INCLUDE_PATH, i))
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, 'a'):
+                pass
+
+        os.makedirs(os.path.join(CPP_FAKE_INCLUDE_PATH, "atcoder"), exist_ok=True)
+        with open(os.path.join(CPP_FAKE_INCLUDE_PATH, "atcoder", "all"), 'a'):
+            pass
+
+    original_includes = re.findall(r"#include\s+<.+>", source)
+    original_includes.extend(re.findall(r'#include\s+"atcoder/all"', source))
+
+    include_directories = [
+        "",
+        "c++",
+        "c++/x86_64-w64-mingw32", # これは環境により変化するかもしれない
+        "c++/backward"
+    ]
+
+    cmds = ["g++", "-nostdinc++", "-x", "c++", "-isystem", source_path, "-E", "-CC", "-P", "-", "-o", "-"]
+
+    for i in include_directories:
+        cmds.extend(["-I", os.path.join(CPP_FAKE_INCLUDE_PATH, i)])
+
+    proc = subprocess.run(cmds, input=source.encode(),
+                          capture_output=True)
+
+    result = "\n".join(original_includes) + "\n" + proc.stdout.decode()
+
+    return result
+
 
 def run():
     if current_credentials.atcoder is None:
@@ -103,8 +157,11 @@ def run():
         formatted_content = content
     else:
         formatted_content = matched.group(1)
-    problem = Problem.deserialize(data)
 
+    if current_preferences.cpp_expand_include_files:
+        formatted_content = expand_include_source(os.path.dirname(source), formatted_content)
+
+    problem = Problem.deserialize(data)
     replace_current_line(make_ascii_escaped(f"Submitting {problem.problem_id}...", AsciiColors.BRIGHT_GREEN))
     sys.stdout.write("\r\n")
     handler = AtCoderSubmissionHandler(problem.problem_id)

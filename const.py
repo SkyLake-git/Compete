@@ -17,6 +17,7 @@ os.makedirs(RESOURCES_PATH, exist_ok=True)
 TESTCASES_CACHE_PATH = os.path.join(RESOURCES_PATH, "testcases.json")
 PREFERENCES_PATH = os.path.join(RESOURCES_PATH, "preferences.json")
 CREDENTIALS_PATH = os.path.join(RESOURCES_PATH, "credentials.json")
+CPP_FAKE_INCLUDE_PATH = os.path.join(RESOURCES_PATH, "cpp_fake_includes")
 
 
 class ContestType:

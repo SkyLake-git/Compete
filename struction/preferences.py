@@ -2,6 +2,8 @@ import typing
 from const import *
 from languages import SourceLanguages, NAME_MAPPINGS
 
+from const import dict_getdefault
+
 
 class PreferenceKeys:
     EXECUTABLE_PATH = "executable_path"
@@ -9,6 +11,7 @@ class PreferenceKeys:
     LANGUAGE_ID = "language_id"
     REQUEST_DBG_REMAIN_TAIL = "request_dbg_remain_tail"
     SUBMIT_DELAY = "submit_delay"
+    CPP_EXPAND_INCLUDE_FILES = "cpp_expand_include_files"
 
     @staticmethod
     def description(k: str):
@@ -36,13 +39,16 @@ class PreferenceKeys:
         except ValueError:
             return None
 
+
 PREFERENCE_KEY_LIST = [
     PreferenceKeys.EXECUTABLE_PATH,
     PreferenceKeys.SOURCE_PATH,
     PreferenceKeys.LANGUAGE_ID,
     PreferenceKeys.REQUEST_DBG_REMAIN_TAIL,
-    PreferenceKeys.SUBMIT_DELAY
+    PreferenceKeys.SUBMIT_DELAY,
+    PreferenceKeys.CPP_EXPAND_INCLUDE_FILES
 ]
+
 
 class Preferences:
     executable_path: typing.Union[None, str]
@@ -50,10 +56,7 @@ class Preferences:
     language_id: typing.Union[None, int]
     request_dbg_remain_tail: bool
     submit_delay: int
-
-    heuristic_executable_path: typing.Union[None, str]
-    heuristic_tester_path: typing.Union[None, str]
-    heuristic_testcase_dir_path: typing.Union[None, str]
+    cpp_expand_include_files: bool
 
     def __init__(
             self,
@@ -61,13 +64,15 @@ class Preferences:
             source_path: typing.Union[None, str] = None,
             language_id: typing.Union[None, int] = None,
             request_dbg_remain_tail: bool = True,
-            submit_delay: int = 2
+            submit_delay: int = 2,
+            cpp_expand_include_files: bool = False
     ):
         self.executable_path = executable_path
         self.source_path = source_path
         self.language_id = language_id
         self.request_dbg_remain_tail = request_dbg_remain_tail
         self.submit_delay = submit_delay
+        self.cpp_expand_include_files = cpp_expand_include_files
 
         if executable_path is not None:
             if not os.path.exists(executable_path):
@@ -85,7 +90,8 @@ class Preferences:
             PreferenceKeys.SOURCE_PATH: self.source_path,
             PreferenceKeys.LANGUAGE_ID: self.language_id,
             PreferenceKeys.REQUEST_DBG_REMAIN_TAIL: self.request_dbg_remain_tail,
-            PreferenceKeys.SUBMIT_DELAY: self.submit_delay
+            PreferenceKeys.SUBMIT_DELAY: self.submit_delay,
+            PreferenceKeys.CPP_EXPAND_INCLUDE_FILES: self.cpp_expand_include_files
         }
 
     def update(self, another):
@@ -94,6 +100,7 @@ class Preferences:
         self.language_id = another.language_id
         self.request_dbg_remain_tail = another.request_dbg_remain_tail
         self.submit_delay = another.submit_delay
+        self.cpp_expand_include_files = another.cpp_expand_include_files
 
     @staticmethod
     def deserialize(data: dict):
@@ -102,5 +109,6 @@ class Preferences:
             dict_getdefault(data, PreferenceKeys.SOURCE_PATH),
             dict_getdefault(data, PreferenceKeys.LANGUAGE_ID),
             dict_getdefault(data, PreferenceKeys.REQUEST_DBG_REMAIN_TAIL, True),
-            dict_getdefault(data, PreferenceKeys.SUBMIT_DELAY, 2)
+            dict_getdefault(data, PreferenceKeys.SUBMIT_DELAY, 2),
+            dict_getdefault(data, PreferenceKeys.CPP_EXPAND_INCLUDE_FILES, False)
         )
