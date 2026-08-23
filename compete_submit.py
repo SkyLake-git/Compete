@@ -61,6 +61,7 @@ def find_source() -> typing.Union[str, None]:
 
     return latest_target
 
+
 def fetch_gcc_includes() -> set:
     proc = subprocess.run(["g++", "-print-file-name=include"], capture_output=True)
 
@@ -80,6 +81,7 @@ def fetch_gcc_includes() -> set:
 
     return includes
 
+
 def expand_include_source(source_path: str, source: str):
     if not os.path.exists(CPP_FAKE_INCLUDE_PATH):
         for i in fetch_gcc_includes():
@@ -98,11 +100,12 @@ def expand_include_source(source_path: str, source: str):
     include_directories = [
         "",
         "c++",
-        "c++/x86_64-w64-mingw32", # これは環境により変化するかもしれない
+        "c++/x86_64-w64-mingw32",  # これは環境により変化するかもしれない
         "c++/backward"
     ]
 
-    cmds = ["g++", "-nostdinc++", "-x", "c++", "-isystem", source_path, "-E", "-CC", "-P", "-", "-o", "-"]
+    cmds = ["g++", "-nostdinc++", "-x", "c++", "-isystem", source_path, "-D", "ONLINE_JUDGE", "-D", "ATCODER", "-E",
+            "-CC", "-P", "-", "-o", "-"]
 
     for i in include_directories:
         cmds.extend(["-I", os.path.join(CPP_FAKE_INCLUDE_PATH, i)])
