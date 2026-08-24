@@ -14,7 +14,7 @@ import preferences_wizard
 from aggregate import current_preferences, current_credentials
 from atcoder.submission import AtCoderSubmissionHandler, AtCoderSubmissionOption
 from const import TestcaseResult, ROOT_PATH, print_err, make_ascii_escaped, AsciiColors, TESTCASES_CACHE_PATH, Problem, \
-    replace_current_line, CPP_FAKE_INCLUDE_PATH
+    replace_current_line, CPP_FAKE_INCLUDE_PATH, make_progress
 from struction.preferences import PreferenceKeys
 
 
@@ -63,11 +63,12 @@ def find_source() -> typing.Union[str, None]:
 
 
 def fetch_gcc_includes() -> set:
+    print("Fetching gcc includes...")
     proc = subprocess.run(["g++", "-print-file-name=include"], capture_output=True)
 
     find_dir = proc.stdout.decode().strip()
 
-    print(find_dir)
+    replace_current_line("Fetched. include directory: " + os.path.abspath(find_dir) + "\n")
 
     includes = set()
     if not os.path.exists(find_dir):
@@ -79,20 +80,30 @@ def fetch_gcc_includes() -> set:
             continue
         includes.add(os.path.relpath(i, find_dir))
 
+    print(f"Detected {len(includes)} include files.")
+
     return includes
 
 
 def expand_include_source(source_path: str, source: str):
     if not os.path.exists(CPP_FAKE_INCLUDE_PATH):
-        for i in fetch_gcc_includes():
+        includes = fetch_gcc_includes()
+        total = len(includes)
+        cur = 0
+        sys.stdout.write("Creating fake source...")
+        for i in includes:
             path = str(os.path.join(CPP_FAKE_INCLUDE_PATH, i))
             os.makedirs(os.path.dirname(path), exist_ok=True)
+            cur += 1
+            replace_current_line("Creating fake source... " + make_progress(cur, total, 10) + f" {cur}/{total}")
             with open(path, 'a'):
                 pass
 
         os.makedirs(os.path.join(CPP_FAKE_INCLUDE_PATH, "atcoder"), exist_ok=True)
         with open(os.path.join(CPP_FAKE_INCLUDE_PATH, "atcoder", "all"), 'a'):
             pass
+
+        replace_current_line("Completed\n")
 
     original_includes = re.findall(r"#include\s+<.+>", source)
     original_includes.extend(re.findall(r'#include\s+"atcoder/all"', source))
@@ -112,6 +123,10 @@ def expand_include_source(source_path: str, source: str):
 
     proc = subprocess.run(cmds, input=source.encode(),
                           capture_output=True)
+
+    if len(proc.stderr.decode().strip()) > 0:
+        print_err(proc.stderr.decode())
+        return False
 
     result = "\n".join(original_includes) + "\n" + proc.stdout.decode()
 
@@ -163,6 +178,10 @@ def run():
 
     if current_preferences.cpp_expand_include_files:
         formatted_content = expand_include_source(os.path.dirname(source), formatted_content)
+
+        if not formatted_content:
+            print_err("Failed to preprocess source. cancelled submission")
+            return
 
     problem = Problem.deserialize(data)
     replace_current_line(make_ascii_escaped(f"Submitting {problem.problem_id}...", AsciiColors.BRIGHT_GREEN))
