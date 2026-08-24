@@ -133,6 +133,30 @@ def expand_include_source(source_path: str, source: str):
     return result
 
 
+def format_source_code(file_path: str, source: str):
+    matched = re.search(r"// compete BOF([\s\S]*)// compete EOF", source)
+    if matched is None:
+        formatted_content = source
+    else:
+        formatted_content = matched.group(1)
+
+    if current_preferences.cpp_expand_include_files:
+        if current_preferences.cpp_project_directory is None:
+            source_path = os.path.dirname(file_path)
+        else:
+            source_path = current_preferences.cpp_project_directory
+        formatted_content = expand_include_source(source_path, formatted_content)
+
+        if not formatted_content:
+            return False
+
+    return formatted_content
+
+
+def clip(p_text: str):
+    subprocess.run(["clip"], input=p_text.encode("shift-jis"))
+
+
 def run():
     if current_credentials.atcoder is None:
         print(make_ascii_escaped("Necessary credentials for AtCoder doesn't found.", AsciiColors.BRIGHT_YELLOW))
@@ -170,18 +194,11 @@ def run():
     with open(TESTCASES_CACHE_PATH, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
-    matched = re.search(r"// compete BOF([\s\S]*)// compete EOF", content)
-    if matched is None:
-        formatted_content = content
-    else:
-        formatted_content = matched.group(1)
+    formatted_content = format_source_code(source, content)
 
-    if current_preferences.cpp_expand_include_files:
-        formatted_content = expand_include_source(os.path.dirname(source), formatted_content)
-
-        if not formatted_content:
-            print_err("Failed to preprocess source. cancelled submission")
-            return
+    if not format_source_code:
+        print_err("Failed to format source. cancelled submission")
+        return
 
     problem = Problem.deserialize(data)
     replace_current_line(make_ascii_escaped(f"Submitting {problem.problem_id}...", AsciiColors.BRIGHT_GREEN))
@@ -192,7 +209,7 @@ def run():
     else:
         if os.name == 'nt':
             print(make_ascii_escaped("Pasted to clipboard instead of submitting.", AsciiColors.YELLOW))
-            subprocess.run(["clip"], input=formatted_content.encode("shift-jis"))
+            clip(formatted_content)
 
 
 if __name__ == '__main__':
