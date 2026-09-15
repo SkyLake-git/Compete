@@ -2,12 +2,13 @@ import math
 import os
 import shutil
 import sys
+import unicodedata
 from math import remainder
 
 BASE_URL = "https://atcoder.jp/"
 REQUEST_HEADERS = {
     'Accept-Language': 'ja',
-    'User-Agent': 'zMozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36'
 }
 
 ROOT_PATH = os.path.join(os.path.dirname(__file__), "..")
@@ -306,6 +307,10 @@ def make_progress(pcur, pmax, col):
     return base
 
 
+def unicode_width(s: str) -> int:
+    return sum([unicodedata.east_asian_width(c) in 'WF' and 2 or 1 for c in s])
+
+
 def fill_space(s, smax):
-    s += max(0, smax - len(s)) * " "
+    s += max(0, smax - unicode_width(s)) * " "
     return s

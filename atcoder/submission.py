@@ -8,7 +8,7 @@ from aggregate import current_credentials, current_preferences
 from atcoder.constants import *
 from bs4 import BeautifulSoup
 from const import ContestType, print_err, make_ascii_escaped, AsciiColors, replace_current_line, \
-    TestcaseResult, make_progress, testcase_result_to_string, fill_space
+    TestcaseResult, make_progress, testcase_result_to_string, fill_space, unicode_width
 from requests_wrapper import get_requests, RequestsWrapper
 from struction.submission import SubmissionHandler, Submission, SubmissionOption, SubmissionResult
 
@@ -171,11 +171,12 @@ def pretty_print_submissions(l: list[AtCoderSubmission]):
             submission.result.to_string()
         ]
         for i in range(len(c)):
+            width = unicode_width(c[i])
             if len(max_sizes) <= i:
-                max_sizes.append(len(c[i]))
+                max_sizes.append(width)
                 continue
-            if max_sizes[i] < len(c[i]):
-                max_sizes[i] = len(c[i])
+            if width > max_sizes[i]:
+                max_sizes[i] = width
         contents.append(c)
 
     for c in contents:
