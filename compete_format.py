@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 import compete_submit
 from const import make_ascii_escaped, print_err, AsciiColors
@@ -12,7 +13,10 @@ if __name__ == '__main__':
         sys.exit(1)
     with open(path, 'r', encoding='utf-8') as f:
         content = f.read()
+    start = time.time()
     formatted = compete_submit.format_source_code(path, content)
+    took = time.time() - start
+    print("Took " + str(round(took * 1000, 1)) + "ms")
     if not formatted:
         print_err("Failed to format source.")
     else:

@@ -30,7 +30,7 @@ def run(auto_exit: bool):
         if auto_exit and should_exit and waiting_judge:
             break
 
-        time.sleep(3)
+        time.sleep(1.5)
         repeated = True
         sys.stdout.write(make_ascii_move(len(submissions) + 1))
 

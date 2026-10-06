@@ -150,6 +150,14 @@ def format_source_code(file_path: str, source: str):
         if not formatted_content:
             return False
 
+    matched = re.search(r"([\s\S]*)// compete BEGIN_NO_NEW_LINES([\s\S]*)// compete END_NO_NEW_LINES([\s\S]*)",
+                        formatted_content)
+    if matched is not None:
+        safe_content = re.sub(r"//(.*)\n", r"/*\1*/\n", matched.group(2).replace("\r\n", "\n"))
+        safe_content = re.sub(r'\n[ \t]*', ' ', safe_content)
+        formatted_content = matched.group(1) + safe_content + matched.group(
+            3)
+
     return formatted_content
 
 
