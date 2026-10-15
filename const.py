@@ -8,7 +8,6 @@ from math import remainder
 BASE_URL = "https://atcoder.jp/"
 REQUEST_HEADERS = {
     'Accept-Language': 'ja',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36'
 }
 
 ROOT_PATH = os.path.join(os.path.dirname(__file__), "..")

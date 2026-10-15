@@ -12,6 +12,8 @@ class PreferenceKeys:
     SUBMIT_DELAY = "submit_delay"
     CPP_EXPAND_INCLUDE_FILES = "cpp_expand_include_files"
     CPP_PROJECT_DIRECTORY = "cpp_project_directory"
+    GIT_DIRECTORIES = "git_directories"
+    INJECT_GIT_COMMIT_HASHES = "inject_git_commit_hashes"
 
     @staticmethod
     def description(k: str):
@@ -59,6 +61,8 @@ class Preferences:
     submit_delay: int
     cpp_expand_include_files: bool
     cpp_project_directory: typing.Union[None, str]
+    git_directories: dict[str, str]
+    inject_git_commit_hashes: bool
 
     def __init__(
             self,
@@ -68,7 +72,9 @@ class Preferences:
             request_dbg_remain_tail: bool = True,
             submit_delay: int = 2,
             cpp_expand_include_files: bool = False,
-            cpp_project_directory: typing.Union[None, str] = None
+            cpp_project_directory: typing.Union[None, str] = None,
+            git_directories: dict[str, str] = [],
+            inject_git_commit_hashes: bool = False
     ):
         self.executable_path = executable_path
         self.source_path = source_path
@@ -77,6 +83,8 @@ class Preferences:
         self.submit_delay = submit_delay
         self.cpp_expand_include_files = cpp_expand_include_files
         self.cpp_project_directory = cpp_project_directory
+        self.git_directories = git_directories
+        self.inject_git_commit_hashes = inject_git_commit_hashes
 
         if executable_path is not None:
             if not os.path.exists(executable_path):
@@ -96,7 +104,9 @@ class Preferences:
             PreferenceKeys.REQUEST_DBG_REMAIN_TAIL: self.request_dbg_remain_tail,
             PreferenceKeys.SUBMIT_DELAY: self.submit_delay,
             PreferenceKeys.CPP_EXPAND_INCLUDE_FILES: self.cpp_expand_include_files,
-            PreferenceKeys.CPP_PROJECT_DIRECTORY: self.cpp_project_directory
+            PreferenceKeys.CPP_PROJECT_DIRECTORY: self.cpp_project_directory,
+            PreferenceKeys.GIT_DIRECTORIES: self.git_directories,
+            PreferenceKeys.INJECT_GIT_COMMIT_HASHES: self.inject_git_commit_hashes
         }
 
     def update(self, another):
@@ -107,6 +117,8 @@ class Preferences:
         self.submit_delay = another.submit_delay
         self.cpp_expand_include_files = another.cpp_expand_include_files
         self.cpp_project_directory = another.cpp_project_directory
+        self.git_directories = another.git_directories
+        self.inject_git_commit_hashes = another.inject_git_commit_hashes
 
     @staticmethod
     def deserialize(data: dict):
@@ -117,5 +129,7 @@ class Preferences:
             dict_getdefault(data, PreferenceKeys.REQUEST_DBG_REMAIN_TAIL, True),
             dict_getdefault(data, PreferenceKeys.SUBMIT_DELAY, 2),
             dict_getdefault(data, PreferenceKeys.CPP_EXPAND_INCLUDE_FILES, False),
-            dict_getdefault(data, PreferenceKeys.CPP_PROJECT_DIRECTORY)
+            dict_getdefault(data, PreferenceKeys.CPP_PROJECT_DIRECTORY),
+            dict_getdefault(data, PreferenceKeys.GIT_DIRECTORIES, {}),
+            dict_getdefault(data, PreferenceKeys.INJECT_GIT_COMMIT_HASHES, False)
         )

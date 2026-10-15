@@ -43,8 +43,8 @@ def find_source() -> typing.Union[str, None]:
     candidates = []
     if current_preferences.source_path is not None:
         candidates.append(current_preferences.source_path)
-
-    find_source_by_cmake(candidates)
+    else:
+        find_source_by_cmake(candidates)
     latest_target = None
     latest_modified_time = -1
     for file in candidates:
@@ -133,6 +133,18 @@ def expand_include_source(source_path: str, source: str):
     return result
 
 
+def make_git_commit_hash_comments():
+    if not current_preferences.inject_git_commit_hashes:
+        return ""
+    res = ""
+
+    for d, v in current_preferences.git_directories.items():
+        proc = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, cwd=v)
+        res += f"// {d} latest commit hash: {proc.stdout.decode().strip()}"
+
+    return res + "\n"
+
+
 def format_source_code(file_path: str, source: str):
     matched = re.search(r"// compete BOF([\s\S]*)// compete EOF", source)
     if matched is None:
@@ -157,6 +169,8 @@ def format_source_code(file_path: str, source: str):
         safe_content = re.sub(r'\n[ \t]*', ' ', safe_content)
         formatted_content = matched.group(1) + safe_content + matched.group(
             3)
+
+    formatted_content = make_git_commit_hash_comments() + formatted_content
 
     return formatted_content
 
