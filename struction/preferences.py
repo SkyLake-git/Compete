@@ -89,8 +89,6 @@ class Preferences:
         if executable_path is not None:
             if not os.path.exists(executable_path):
                 raise Exception("Specified executable path does not exists: " + executable_path)
-            if os.path.splitext(executable_path)[1] != ".exe":
-                raise Exception("Specified executable path is not executable: " + executable_path)
 
         if source_path is not None:
             if not os.path.exists(source_path):

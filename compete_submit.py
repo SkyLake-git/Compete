@@ -64,21 +64,32 @@ def find_source() -> typing.Union[str, None]:
 
 def fetch_gcc_includes() -> set:
     print("Fetching gcc includes...")
-    proc = subprocess.run(["g++", "-print-file-name=include"], capture_output=True)
+    proc = subprocess.run(["g++", "-E", "-Wp,-v", "-x", "c++", "-"], stdin=subprocess.DEVNULL, capture_output=True)
+    opt = proc.stderr.decode().strip()
+    matched = re.search(r"#include <...> search starts here:([\s\S]*)End of search list.", opt)
 
-    find_dir = proc.stdout.decode().strip()
+    if matched is None:
+        print_err("Failed to detect include directories")
+        raise Exception()
 
-    replace_current_line("Fetched. include directory: " + os.path.abspath(find_dir) + "\n")
+    find_dirs = []
+
+    for g in matched.group(1).strip().splitlines():
+        g = g.strip()
+        if os.path.exists(g):
+            find_dirs.append(g)
+            replace_current_line("Detected include directory: " + os.path.abspath(g) + "\n")
 
     includes = set()
-    if not os.path.exists(find_dir):
-        return includes
-    if not os.path.isdir(find_dir):
-        return includes
-    for i in glob.glob(os.path.join(find_dir, "**/*"), recursive=True):
-        if os.path.isdir(i):
+    for find_dir in find_dirs:
+        if not os.path.exists(find_dir):
             continue
-        includes.add(os.path.relpath(i, find_dir))
+        if not os.path.isdir(find_dir):
+            continue
+        for i in glob.glob(os.path.join(find_dir, "**/*"), recursive=True):
+            if os.path.isdir(i):
+                continue
+            includes.add(os.path.relpath(i, find_dir))
 
     print(f"Detected {len(includes)} include files.")
 
@@ -86,6 +97,7 @@ def fetch_gcc_includes() -> set:
 
 
 def expand_include_source(source_path: str, source: str):
+
     if not os.path.exists(CPP_FAKE_INCLUDE_PATH):
         includes = fetch_gcc_includes()
         total = len(includes)
@@ -115,14 +127,16 @@ def expand_include_source(source_path: str, source: str):
         "c++/backward"
     ]
 
-    cmds = ["g++", "-nostdinc++", "-x", "c++", "-isystem", source_path, "-D", "ONLINE_JUDGE", "-D", "ATCODER", "-E",
-            "-CC", "-P", "-", "-o", "-"]
+    cmds = ["g++", "-nostdinc", "-nostdinc++", "-x", "c++", "-isystem", source_path, "-D", "ONLINE_JUDGE", "-D", "ATCODER", "-E",
+            "-CC", "-P"]
 
     for i in include_directories:
         cmds.extend(["-I", os.path.join(CPP_FAKE_INCLUDE_PATH, i)])
 
+    cmds.extend(["-", "-o", "-"])
+
     proc = subprocess.run(cmds, input=source.encode(),
-                          capture_output=True)
+                          capture_output=True, cwd=CPP_FAKE_INCLUDE_PATH)
 
     if len(proc.stderr.decode().strip()) > 0:
         print_err(proc.stderr.decode())
@@ -180,7 +194,15 @@ def format_source_code(file_path: str, source: str):
 
 
 def clip(p_text: str):
-    subprocess.run(["clip"], input=p_text.encode("shift-jis"))
+    if os.name == "posix":
+        if "wsl" in os.uname().release.lower():
+            subprocess.run(["clip.exe"], input=p_text.encode("shift-jis"))
+        else:
+            subprocess.run(["xclip", "-sel", "c"], input=p_text.encode())
+    elif os.name == "nt":
+        subprocess.run(["clip"], input=p_text.encode("shift-jis"))
+    else:
+        print_err("Clip feature is not supported for your os")
 
 
 def run():
@@ -233,9 +255,8 @@ def run():
     if handler.submit(formatted_content, AtCoderSubmissionOption()):
         compete_watch.run(True)
     else:
-        if os.name == 'nt':
-            print(make_ascii_escaped("Pasted to clipboard instead of submitting.", AsciiColors.YELLOW))
-            clip(formatted_content)
+        print(make_ascii_escaped("Pasted to clipboard instead of submitting.", AsciiColors.YELLOW))
+        clip(formatted_content)
 
 
 if __name__ == '__main__':

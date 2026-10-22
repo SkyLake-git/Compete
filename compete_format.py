@@ -20,8 +20,5 @@ if __name__ == '__main__':
     if not formatted:
         print_err("Failed to format source.")
     else:
-        if os.name == 'nt':
-            compete_submit.clip(formatted)
-            print(make_ascii_escaped("Pasted to clipboard.", AsciiColors.YELLOW))
-        else:
-            print(formatted)
+        compete_submit.clip(formatted)
+        print(make_ascii_escaped("Pasted to clipboard.", AsciiColors.YELLOW))
