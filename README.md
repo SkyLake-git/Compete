@@ -1,7 +1,14 @@
 # Compete
 
+> [!WARNING]
+> このプロジェクトはいくつかの問題があるため、リライトが検討されています。<br>
+> 使用することは推奨されません。
+
+
+
 AtCoder 用のテストケースユーティリティー<br>
-*Windows のみ動作確認済み
+*Windows, gcc, mingw 環境のみ動作確認済み
+
 
 ## Features
 
